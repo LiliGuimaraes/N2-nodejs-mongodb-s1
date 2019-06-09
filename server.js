@@ -1,7 +1,7 @@
 const express = require("express");
 const maravilhosas = require("./schema.js");
 const bodyParser = require('body-parser');
-
+const multer = require('multer');
 const db = require("./repository.js");
 
 const PORT = process.env.PORT || 5000;
@@ -13,6 +13,7 @@ console.log('connect to mongodb')
 
 const app = express();
 app.use(bodyParser.json());
+
 
 app.get("/maravilhosas", (req, res) => {
     maravilhosas.find((error, response) => {
@@ -29,6 +30,7 @@ app.get("/maravilhosas", (req, res) => {
 app.get("/maravilhosas/:id", (req, res) => {
     maravilhosas.findById(
         req.params.id,
+
         function(err, maravilhosa) {
             if (err) return res.send(err);
 
@@ -39,31 +41,29 @@ app.get("/maravilhosas/:id", (req, res) => {
     );
 });
 
+
 app.post("/maravilhosas", (req, res) => {
     const novaMaravilhosa = new maravilhosas({
         nome: req.body.nome,
-        bio: req.body.bio,
-        avatar: req.body.avatar,
+        profissao: req.body.profissao,
+        anosVida: req.body.anosVida,
     });
 
     novaMaravilhosa.save(err => {
         if (err) return res.send(err);
-
         res.send(novaMaravilhosa);
     });
 });
 
-// app.put("/maravilhosas/:id", (req, res) => {
-//   maravilhosas.findByIdAndUpdate(
-//     req.params.id,
-//     { $set: req.body },
-//     { new: true },
-//     function(error, maravilhosa) {
-//       if (error) return res.status(error.code).send(error.message);
-//       res.send(maravilhosa);
-//     }
-//   );
-// })
+app.put("/maravilhosas/:id", (req, res) => {
+    maravilhosas.findByIdAndUpdate(
+        req.params.id, { $set: req.body }, { new: true },
+        function(error, maravilhosa) {
+            if (error) return res.status(error.code).send(error.message);
+            res.send(maravilhosa);
+        }
+    );
+})
 
 app.patch("/maravilhosas/:id", (req, res) => {
     maravilhosas.findByIdAndUpdate(
